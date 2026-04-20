@@ -1,0 +1,54 @@
+
+N = 2
+n = 1
+tf = 1000000
+dt = 10
+epsilon = 1e3
+s = 0.9
+sampling = 10
+adaptive = 0
+rho_0 = 1.225   
+R_T   = 6.371e6     
+lambda = 8000       
+Cx = 2.0            
+L = 0
+r = 0
+kappa = 0
+d = 0
+m0 =  8500    
+m1 = 5.972e24    
+m2 =  7.348e22        
+
+S0 = 10
+S1 = 0
+S2 = 0
+
+R0 = 2.51
+R1 = 6.371e6
+R2 = 1.737e6
+
+
+Cx0 = 0
+Cx1 = 0
+Cx2 = 0    
+
+N_excit = 0
+nsteps_per = 0
+x0 = 3.14159e8
+y0 = 0
+vx0 = -1178.49846
+vy0 = 226.14462
+
+x1 = 0
+y1 = 0
+vx1 = 0
+vy1 = 0
+
+x2 = 384400000
+y2 = 0
+vx2 = 0
+vy2 = 1022
+
+
+
+output = output.txt
