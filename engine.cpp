@@ -51,10 +51,10 @@ private:
   // TODO definir l'énergie mecanique
   
 
-  double ix(int i) {
+  double ix(int i) const {
     return y[4*(i)];
   }
-  double iy(int i) {
+  double iy(int i) const {
     return y[4*(i) +1];
   }
   double ivx(int i) const {
@@ -84,6 +84,7 @@ std::pair<double,double> compute_F_ij_grav(size_t i, size_t j)
 }
 
 double compute_rho(double r){ 
+  if (r<R_T) { r=R_T;}
   return rho_0 * exp(-(r-R_T)/lambda); 
 };
 
@@ -102,7 +103,7 @@ std::pair<double,double> compute_F_ij_frott(size_t i, size_t j)
         return {0.0, 0.0};
     }
 
-    double rho = compute_rho(compute_norm(ix(i), iy(i)));
+    double rho = compute_rho(compute_norm(ix(i)-ix(j), iy(i)-iy(j)));
 
     double factor = -0.5 * rho * S[i] * Cx[j] * vrel;
 
@@ -141,13 +142,14 @@ double compute_energie_cinetique() const
     return Ec;
 }
 
+
 double compute_energie_potentielle_grav() const
 {
     double Ep = 0.0;
     for (size_t i = 0; i < N + n; ++i) {
         for (size_t j = i + 1; j < N + n; ++j) {
-            double dx = y[4*i]     - y[4*j];
-            double dy = y[4*i + 1] - y[4*j + 1];
+            double dx = ix(i) - ix(j);
+            double dy = iy(i) - iy(j);
             double rij = sqrt(dx*dx + dy*dy);
 
             if (rij > 1e-12) {
@@ -157,6 +159,7 @@ double compute_energie_potentielle_grav() const
     }
     return Ep;
 }
+
 
 double compute_energie_mecanique() const
 {
@@ -169,20 +172,30 @@ std::pair<double,double> compute_quantite_mouvement() const
     double Py = 0.0;
 
     for (size_t i = 0; i < N + n; ++i) {
-        Px += m[i] * y[4*i + 2];
-        Py += m[i] * y[4*i + 3];
+        Px += m[i] * ivx(i);
+        Py += m[i] * ivy(i);
     }
 
     return {Px, Py};
 }
+
+double compute_quantite_mouvement_norm() const{
+
+    auto [Px, Py] = compute_quantite_mouvement();
+    return sqrt(Px*Px + Py*Py);
+}
+
+
+
+
 
 bool checkCollisions() const
 {
     for (size_t i = 0; i < N + n; ++i) {
         for (size_t j = i + 1; j < N + n; ++j) {
 
-            double dx = y[4*i]     - y[4*j];
-            double dy = y[4*i + 1] - y[4*j + 1];
+            double dx = ix(i) - ix(j);
+            double dy = iy(i) - iy(j);
             double dist = sqrt(dx*dx + dy*dy);
 
             if (dist <= R[i] + R[j]) {
@@ -195,8 +208,8 @@ bool checkCollisions() const
 
  void compute_f(valarray<double>& f){
         for (unsigned int i(0); i<N+n; ++i){
-             f[4*i] = y[4*(i)+2]; // vx 
-             f[4*i+1] = y[4*(i)+3]; // vy
+             f[4*i] = ivx(i); // vx 
+             f[4*i+1] = ivy(i); // vy
              auto [ax, ay] = compute_acc_sur_i(i);
              f[4*i+2] = ax; // ax
              f[4*i+3] = ay; // ay
@@ -255,13 +268,9 @@ void step_adaptatif()
         valarray<double> y_2half = step_fixe(0.5 * dt_try, y_half);
         valarray<double> y_full  = step_fixe(dt_try, y);
 
-        // erreur sur les 4 composantes d'Artemis
-        double err2 = 0.0;
-        for (size_t i = 0; i < 4; ++i) {
-            double diff = y_full[i] - y_2half[i];
-            err2 += diff * diff;
-        }
-        double err = sqrt(err2);
+        valarray<double> delta_y = (y_full - y_2half);
+        double err2= (delta_y * delta_y).sum();
+        double err = sqrt(err2) / 15.0;
 
         if (err <= epsilon || err < 1e-30) {
             y = y_2half;     // meilleure approximation
@@ -281,28 +290,35 @@ void step_adaptatif()
   
 
 void printOut(bool write)
+{
+  // Ecriture tous les [sampling] pas de temps, sauf si write est vrai
+  if((!write && last >= sampling) || (write && last != 1))
   {
+    *outputFile << setprecision(15) << fixed
+                << t << " ";
 
-    // Ecriture tous les [sampling] pas de temps, sauf si write est vrai
-    if((!write && last>=sampling) || (write && last!=1))
+    for (size_t i = 0; i < N + n; ++i)
     {
-      double rA = sqrt(y[0]*y[0] + y[1]*y[1]);
-      double vA = sqrt(y[2]*y[2] + y[3]*y[3]);
+      *outputFile << setprecision(15) << fixed
+                  << ix(i) << " " << iy(i) << " "
+                  << ivx(i) << " " << ivy(i) << " ";
+    }
 
-      *outputFile << setprecision(15)
-            << t << " "
-            << y[0] << " " << y[1] << " "
-            << y[2] << " " << y[3] << " "
-            << rA << " " << vA << " "
-            << dt_current
-            << endl;
-      last = 1;
-    }
-    else
-    {
-      last++;
-    }
+    *outputFile << setprecision(15) << fixed
+                << compute_energie_cinetique() << " "
+                << compute_energie_potentielle_grav() << " "
+                << compute_energie_mecanique() << " "
+                << compute_quantite_mouvement_norm() << " "
+                << dt_current
+                << endl;
+
+    last = 1;
   }
+  else
+  {
+    last++;
+  }
+}
 
 
 public:
