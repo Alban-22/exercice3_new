@@ -3,11 +3,11 @@ N = 2
 n = 1
 tf = 1000000
 dt = 10
-epsilon = 1e3
+epsilon = 1e-8
 s = 0.9
 sampling = 10
 adaptive = 0
-rho_0 = 1.225   
+rho_0 = 0  
 R_T   = 6.371e6     
 lambda = 8000       
 Cx = 2.0            
@@ -15,40 +15,49 @@ L = 0
 r = 0
 kappa = 0
 d = 0
-m0 =  8500    
-m1 = 5.972e24    
-m2 =  7.348e22        
 
-S0 = 10
+m0= 8500
+m1 = 5.972e24    
+m2 =  7.3477e22        
+
+S0 = 19.792347876881053    
 S1 = 0
 S2 = 0
 
-R0 = 2.51
-R1 = 6.371e6
+R0= 2.51
+R1 = 6378.1e3
 R2 = 1.737e6
 
-
-Cx0 = 0
+Cx0 = 0.3
 Cx1 = 0
-Cx2 = 0    
+Cx2 = 0
 
 N_excit = 0
 nsteps_per = 0
-x0 = 3.14159e8
-y0 = 0
-vx0 = -1178.49846
-vy0 = 226.14462
 
-x1 = 0
+bool_alpha0=1
+alphadeg0=5
+vnorm0=1200
+x0= 309482755.462803
+y0= 0
+vx0 = 0
+vy0 = 0
+
+bool_alpha1=0
+alphadeg1=0
+vnorm1=0
+x1 = -4676244.537196982
 y1 = 0
 vx1 = 0
-vy1 = 0
+vy1 = -12.446322365014593
 
-x2 = 384400000
+bool_alphadeg2=0
+alpha2=0
+vnorm2=0
+x2 = 380071755.462803
 y2 = 0
 vx2 = 0
-vy2 = 1022
-
+vy2 = 1011.6014149171461
 
 
 output = output.txt
