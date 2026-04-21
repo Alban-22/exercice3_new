@@ -3,7 +3,7 @@ import subprocess
 import os
 
 # Parameters
-repertoire = 'C:/EPFL/Semestre_4/Physique_numérique/Exercice_3/Partie/Exercice3/'
+repertoire = 'C:/EPFL/Semestre_4/Physique_numérique/exercice3_new/'
 executable = 'engine.exe'
 input_filename = 'configuration.in.example' # Strictly no longer needed, but we keep it for now to avoid having to change the code in engine.cpp
 

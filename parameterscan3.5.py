@@ -17,9 +17,14 @@ input_parameters = {
     'adaptive': 1,
     'epsilon': 1e-6,
     's': 0.9,
-    'sampling': 3600,
+    'sampling': 1,
     'rho_0': 0.0,
     'alphadeg0': 5,
+    'alphadeg1': 0,
+    'alphadeg2': 0,
+    'bool_alpha0': True,    
+    'bool_alpha1': False,
+    'bool_alpha2': False,
     'vnorm0': 1200
 }
 
@@ -29,7 +34,7 @@ input_parameters = {
 
 paramstr = 'alphadeg0' # The parameter to scan, must be one of the keys in input_parameters
 
-variable_array =np.linspace(120, 240, 6)
+variable_array =np.linspace(180 - 2/60,180+2/60, 5)
 
 
 outstr = f"Gravit_s_{input_parameters['s']:.2g}_epsilon_{input_parameters['epsilon']:.2g}"

@@ -24,11 +24,56 @@ plt.rcParams.update({
     'lines.markersize': 8,         # taille des points
 })
 
+
 colors = [
-    "#190CA6",  # Sonde → or (visible, attire l'œil)
-    "orange",  # Terre → bleu profond
-    'green'   # Lune → gris clair
+    '#F4D03F',  # sonde (jaune doux)
+    '#1B4F72',  # Terre (bleu nuit)
+    '#D5D8DC'   # Lune (gris lunaire)
 ]
+
+colors = [
+    '#FFD700',  # Sonde → or (visible, attire l'œil)
+    '#2E86C1',  # Terre → bleu profond
+    '#BFC9CA'   # Lune → gris clair
+]
+
+plt.rcParams.update({
+    'figure.figsize': (7,5),
+
+    # Texte
+    'font.size': a,
+    'axes.labelsize': a,
+    'axes.titlesize': a+2,
+    'axes.titleweight': 'bold',
+
+    # Axes
+    'axes.edgecolor': '#333333',
+    'axes.linewidth': 1.2,
+
+    # Grille
+    'axes.grid': True,
+    'grid.color': "#0B0C60",
+    'grid.linestyle': '--',
+    'grid.alpha': 0.5,
+
+    # Ticks
+    'xtick.labelsize': a-1,
+    'ytick.labelsize': a-1,
+    'xtick.direction': 'in',
+    'ytick.direction': 'in',
+
+    # Courbes
+    'lines.linewidth': 2.2,
+
+    # Fond
+    'figure.facecolor': 'white',
+    'axes.facecolor': 'white',
+})
+
+
+#===========================================================================
+#option espace
+#==========================================================================
 
 # ============================================================
 # USER SETTINGS MODIFER A CHAQUE NOUVELLE SIMULATION
@@ -212,19 +257,32 @@ for i in range(nb_simu):
 
     ax = axes[row][col] if nb_rows > 1 else axes[col]
 
+    
     for j in range(len(x[i])):
-        ax.plot(x[i][j], y[i][j], color=colors[j])
+        ax.plot(x[i][j], y[i][j], color=colors[j], alpha=0.9)
         
         ax.scatter(x[i][j][-1], y[i][j][-1],
-               color=colors[j],
-               s=point_sizes[j])
-    
+           color=colors[j],
+           s=point_sizes[j],
+           edgecolors='black',
+           linewidths=0.6,
+           zorder=3)
+        
+        x_terre = x[i][1][-1]
+        y_terre = y[i][1][-1]
+
+        ax.scatter(x_terre, y_terre,
+               color='red',
+               marker='+',
+               s=scale/10,linewidths=2,
+           zorder=4)
+           
+        
             
     ax.set_title(rf"$\alpha_0={parameterscan[i]:.3f}^\circ$")
     ax.set_xlabel(rf"$x \,\,[\mathrm{{m}}]$")
     ax.set_ylabel(rf"$y \,\,[\mathrm{{m}}]$")
     ax.set_aspect('equal')
-
     ax.grid(True, alpha=0.5)
 
 # Supprimer les cases vides
@@ -248,7 +306,7 @@ def plot_simulation(i):
     plt.figure(figsize=(6,6))
 
     nb_particules = len(x[i])
-    #colors = plt.cm.tab10(range(nb_particules))
+    colors = plt.cm.tab10(range(nb_particules))
 
 
     for j in range(nb_particules):
@@ -257,7 +315,7 @@ def plot_simulation(i):
         plt.scatter(x[i][j][-1], y[i][j][-1],
                color=colors[j],
                s=point_sizes[j])
-        
+    
 
 
     plt.xlabel(rf"$x \,\,[\mathrm{{m}}]$")
@@ -265,11 +323,10 @@ def plot_simulation(i):
     plt.title(rf"$\alpha_0={parameterscan[i]:.3f}^\circ$")
 
     plt.grid(True, alpha=0.5)
-   
+    plt.gca().set_aspect('equal')
     
     plt.tight_layout()
-    plt.gca().set_aspect('equal')
-    plt.savefig(os.path.join(fig_dir, f"trajectoire_simulation_{i}.png"), dpi=300) 
+    plt.savefig(os.path.join(fig_dir, f"trajectoire_simulation_{i}.png"), dpi=300)    
     plt.close()
 
 plot_simulation(0)
@@ -294,6 +351,7 @@ h = r - R_T
 h_min = np.min(h, axis=1)
 
 print("Hauteurs minimales:", h_min)
+
 plt.plot(parameterscan, h_min, 'o-', color='blue')
 plt.xlabel(rf"$\alpha_0 \,\,[\mathrm{{°}}]$")
 plt.ylabel(rf"$h_{{min}} \,\,[\mathrm{{m}}]$")
