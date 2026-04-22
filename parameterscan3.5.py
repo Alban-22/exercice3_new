@@ -12,20 +12,23 @@ input_filename = 'configuration.in.example' # Strictly no longer needed, but we 
 input_parameters = {
     'N': 2,
     'n': 1,
-    'tf': 1 * 24 * 3600,
+    'tf': 10 * 24 * 3600,
     'dt': 10,
     'adaptive': 1,
-    'epsilon': 1e-6,
+    'epsilon': 1e-5,
     's': 0.9,
     'sampling': 1,
-    'rho_0': 0.0,
+    'rho_0': 1.2,
     'alphadeg0': 5,
     'alphadeg1': 0,
     'alphadeg2': 0,
     'bool_alpha0': True,    
     'bool_alpha1': False,
     'bool_alpha2': False,
-    'vnorm0': 1200
+    'vnorm0': 1200,
+    'Cx0': 0,
+    'Cx1': 0.3,
+    'Cx2': 0
 }
 
 # -------------------------------------------------
@@ -34,10 +37,15 @@ input_parameters = {
 
 paramstr = 'alphadeg0' # The parameter to scan, must be one of the keys in input_parameters
 
-variable_array =np.linspace(180 - 2/60,180+2/60, 5)
+#variable_array =np.linspace(180 - 0/60,180+10/60, 10)
 
+variable_array = np.linspace(165,175,10)
 
-outstr = f"Gravit_s_{input_parameters['s']:.2g}_epsilon_{input_parameters['epsilon']:.2g}"
+# 1: np.linspace(150,210,30)
+# 2: np.linspace(168,193,30)
+# 3: np.linspace(165,175,10)
+
+outstr = f"ATM3_s_{input_parameters['s']:.2g}_epsilon_{input_parameters['epsilon']:.2g}"
 
 # -------------------------------------------------
 # Create output directory (2 significant digits)

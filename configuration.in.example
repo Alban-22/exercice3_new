@@ -7,8 +7,8 @@ epsilon = 1e-8
 s = 0.9
 sampling = 10
 adaptive = 0
-rho_0 = 0  
-R_T   = 6.371e6     
+rho_0 = 1.2 
+R_T   = 6378.1e3    
 lambda = 8000       
 Cx = 2.0            
 L = 0
@@ -28,8 +28,8 @@ R0= 2.51
 R1 = 6378.1e3
 R2 = 1.737e6
 
-Cx0 = 0.3
-Cx1 = 0
+Cx0 = 0
+Cx1 = 0.3
 Cx2 = 0
 
 N_excit = 0

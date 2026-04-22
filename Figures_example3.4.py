@@ -5,7 +5,7 @@ import glob
 import re
 
 
-a=20
+a=30
 
 plt.rcParams.update({
     'figure.figsize': (7,5),      # taille des figures (largeur, hauteur)
@@ -121,9 +121,9 @@ plt.ylabel(rf"$E \,\,[\mathrm{{J}}]$")
 plt.grid(True, alpha=0.3)
 plt.legend()
 plt.tight_layout()
-
+plt.show()
 plt.savefig(os.path.join(fig_dir, "energies_evolution.png"), dpi=300)
-
+plt.close()
 
 # ============================================================
 #distance Terre-Lune
@@ -143,6 +143,7 @@ plt.legend()
 plt.tight_layout()
 
 plt.savefig(os.path.join(fig_dir, "distance_terre_lune.png"), dpi=300)
+plt.close()
 
 # ============================================================
 #distance Terre-Lune 2
@@ -158,11 +159,11 @@ plt.xlabel(rf"$t \,\,[\mathrm{{s}}]$")
 plt.ylabel(rf"$\frac{{| ||\vec{{r_T}} - \vec{{r_L}}|| - d|}}{{d}} $")
 
 plt.grid(True, alpha=0.3)   
-plt.legend()
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.2))
 plt.tight_layout()
-
+plt.show()
 plt.savefig(os.path.join(fig_dir, "distance_terre_lune2.png"), dpi=300)
-
+plt.close()
 
 # ============================================================
 # conservation de la quantité de mouvement
@@ -177,5 +178,6 @@ plt.ylabel(rf"$P \,\,[\mathrm{{kg\cdot m\cdot s^{{-1}}}}]$")
 plt.grid(True, alpha=0.3)   
 plt.legend()
 plt.tight_layout()
-
+plt.show()
 plt.savefig(os.path.join(fig_dir, "quantite_mouvement.png"), dpi=300)
+plt.close()

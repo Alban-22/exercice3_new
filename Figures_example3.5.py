@@ -1,3 +1,4 @@
+from matplotlib.patches import Circle
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -26,16 +27,21 @@ plt.rcParams.update({
 
 colors = [
     "#190CA6",  # Sonde → or (visible, attire l'œil)
-    "orange",  # Terre → bleu profond
+    "red",  
     'green'   # Lune → gris clair
 ]
 
+u= 3
+u_L=7
+couleur = "#F98A02" 
+couleur2 = "#6EF082"
 # ============================================================
 # USER SETTINGS MODIFER A CHAQUE NOUVELLE SIMULATION
 # ============================================================
 
-folder = rf"C:/EPFL/Semestre_4/Physique_numérique/exercice3_new/Scan_alphadeg0_Gravit_s_0.9_epsilon_1e-06/"
-
+folder = rf"C:/EPFL/Semestre_4/Physique_numérique/exercice3_new/Scan_alphadeg0_ATM3_s_0.9_epsilon_1e-05/"
+ 
+#folder = rf"C:/EPFL/Semestre_4/Physique_numérique/exercice3_new/Scan_alphadeg0_Gravit_s_0.9_epsilon_1e-15/"
  # une taille par particule
 R_T= 6378.1e3
 R_L =1737.4e3
@@ -47,7 +53,13 @@ scale = 300
 
 point_sizes = [(r / R_T)**2 * scale for r in R]
 
-parameterscan=  variable_array =np.linspace(180 - 2/60,180+2/60, 5)
+parameterscan=variable_arrayvariable_array =np.linspace(165,175,10)
+
+# 1: np.linspace(150,210,30)
+# 2: np.linspace(168,193,30)
+# 3: np.linspace(165,175,10)
+
+
 
 #============================================================
 
@@ -154,17 +166,17 @@ for i in range(len(datasets)):
     P.append(P_)
     dt.append(dt_)
     
-t=np.array(t)
-x=np.array(x)
-y=np.array(y)
-vx=np.array(vx)
-vy=np.array(vy)
-acc=np.array(acc)
-Ec=np.array(Ec)
-Ep=np.array(Ep)
-Em=np.array(Em)
-P=np.array(P)
-dt=np.array(dt)
+t=np.array(t, dtype=object)
+x=np.array(x, dtype=object)
+y=np.array(y, dtype=object)
+vx=np.array(vx, dtype=object)
+vy=np.array(vy, dtype=object)
+#acc=np.array(acc, dtype=object)
+Ec=np.array(Ec, dtype=object)
+Ep=np.array(Ep, dtype=object)
+Em=np.array(Em, dtype=object)
+P=np.array(P, dtype=object)
+dt=np.array(dt, dtype=object)
 
 
 # ============================================================
@@ -191,9 +203,42 @@ dt=np.array(dt)
 # Trajectoires toutes les simulations
 # ============================================================
 
+
+
+
+# Couleurs fixes pour chaque particule
+#colors = plt.cm.tab10(range(nb_particules))
+
+
+# Nouvelle fonction pour dessiner un astre : point noir (taille réelle) + disque visible
+def draw_body(ax, x, y, R_reel, color_visible, R_visible=None, color_point='black', zorder=2):
+    # Disque visible (plus grand, couleur flashy)
+    if R_visible is not None:
+        circle_visible = Circle(
+            (x, y),
+            R_visible,
+            facecolor=color_visible,
+            edgecolor=None,
+            alpha=1.0,
+            zorder=zorder
+        )
+        ax.add_patch(circle_visible)
+    # Disque noir (taille réelle)
+    circle_reel = Circle(
+        (x, y),
+        R_reel,
+        facecolor=color_point,
+        edgecolor='black',
+        linewidth=1.2,
+        alpha=1.0,
+        zorder=zorder+1
+    )
+    ax.add_patch(circle_reel)
+    
 nb_simu = len(x)
 nb_cols = 3
 nb_rows = math.ceil(nb_simu / nb_cols)
+
 
 fig, axes = plt.subplots(nb_rows, nb_cols, figsize=(15, 5 * nb_rows))
 
@@ -202,29 +247,32 @@ if nb_rows == 1:
 
 nb_particules = len(x[0])
 
-# Couleurs fixes pour chaque particule
-#colors = plt.cm.tab10(range(nb_particules))
-
 
 for i in range(nb_simu):
     row = i // nb_cols
     col = i % nb_cols
-
     ax = axes[row][col] if nb_rows > 1 else axes[col]
 
-    for j in range(len(x[i])):
-        ax.plot(x[i][j], y[i][j], color=colors[j])
-        
-        ax.scatter(x[i][j][-1], y[i][j][-1],
-               color=colors[j],
-               s=point_sizes[j])
-    
-            
+    # Trajectoires
+    ax.plot(x[i][0], y[i][0], color='blue', zorder=3, label='Sonde')
+    ax.plot(x[i][1], y[i][1], color='red', zorder=3, label='Terre')
+    ax.plot(x[i][2], y[i][2], color='green', zorder=3, label='Lune')
+
+    # Positions finales
+    x_terre = x[i][1][-1]
+    y_terre = y[i][1][-1]
+    x_lune = x[i][2][-1]
+    y_lune = y[i][2][-1]
+
+    # Terre : disque orange visible + point noir taille réelle
+    draw_body(ax, x_terre, y_terre, R_T, color_visible=couleur, R_visible=R_T*u, color_point='black', zorder=1)
+    # Lune : disque vert visible + point noir taille réelle
+    draw_body(ax, x_lune, y_lune, R_L, color_visible=couleur2, R_visible=R_L*u_L, color_point='black', zorder=1)
+
     ax.set_title(rf"$\alpha_0={parameterscan[i]:.3f}^\circ$")
     ax.set_xlabel(rf"$x \,\,[\mathrm{{m}}]$")
     ax.set_ylabel(rf"$y \,\,[\mathrm{{m}}]$")
     ax.set_aspect('equal')
-
     ax.grid(True, alpha=0.5)
 
 # Supprimer les cases vides
@@ -242,41 +290,55 @@ plt.close()
 # Trajectoires une simulation:  i
 # ============================================================
 
+
 def plot_simulation(i):
     import matplotlib.pyplot as plt
 
-    plt.figure(figsize=(6,6))
+    fig, ax = plt.subplots(figsize=(6,6))
 
     nb_particules = len(x[i])
-    #colors = plt.cm.tab10(range(nb_particules))
-
 
     for j in range(nb_particules):
-        plt.plot(x[i][j], y[i][j], color=colors[j])
-        
-        plt.scatter(x[i][j][-1], y[i][j][-1],
-               color=colors[j],
-               s=point_sizes[j])
-        
+        ax.plot(x[i][j], y[i][j], color=colors[j], zorder=3)
 
+    # positions finales
+    x_terre = x[i][1][-1]
+    y_terre = y[i][1][-1]
 
-    plt.xlabel(rf"$x \,\,[\mathrm{{m}}]$")
-    plt.ylabel(rf"$y \,\,[\mathrm{{m}}]$")
-    plt.title(rf"$\alpha_0={parameterscan[i]:.3f}^\circ$")
+    x_lune = x[i][2][-1]
+    y_lune = y[i][2][-1]
 
-    plt.grid(True, alpha=0.5)
-   
-    
+    # Terre : disque orange visible + point noir taille réelle
+    draw_body(ax, x_terre, y_terre, R_T, color_visible=couleur, R_visible=R_T*u, color_point='black', zorder=1)
+    # Lune : disque vert visible + point noir taille réelle
+    draw_body(ax, x_lune, y_lune, R_L, color_visible=couleur2, R_visible=R_L*u_L, color_point='black', zorder=1)
+
+    ax.set_xlabel(rf"$x \,\,[\mathrm{{m}}]$")
+    ax.set_ylabel(rf"$y \,\,[\mathrm{{m}}]$")
+    ax.set_title(rf"$\alpha_0={parameterscan[i]:.3f}^\circ$")
+
+    ax.grid(True, alpha=0.5)
+    ax.set_aspect('equal')
+    ax.get_legend()
+
     plt.tight_layout()
-    plt.gca().set_aspect('equal')
-    plt.savefig(os.path.join(fig_dir, f"trajectoire_simulation_{i}.png"), dpi=300) 
+    plt.savefig(os.path.join(fig_dir, f"trajectoire_simulation_{i}.png"), dpi=300)
     plt.close()
-
+    
+    
 plot_simulation(0)
 
 # ============================================================
 # hauteur 
 # ============================================================
+'''
+def min_list(x):
+    return np.array([np.min(xi) for xi in x])
+
+def max_list(x):
+    return np.array([np.max(xi) for xi in x])
+
+'''
 
 r = []
 
@@ -289,9 +351,21 @@ for i in range(len(x)):
 
     r.append(ri)
 
-r = np.array(r)
-h = r - R_T
-h_min = np.min(h, axis=1)
+#r = np.array(r, dtype=object)  # (len(x), N)
+'''
+#h_min = np.min(h, axis=1)
+h_min = min_list(h)
+#h_min = min_list([hi for hi in h])
+'''
+r = np.array(r, dtype=object)
+h = r-R_T
+h_min = []
+for i in range(len(h)):
+    hmin = np.min(h[i])
+    h_min.append(hmin)
+    
+h_min = np.array(h_min)
+
 
 print("Hauteurs minimales:", h_min)
 plt.plot(parameterscan, h_min, 'o-', color='blue')
@@ -307,8 +381,17 @@ plt.close()
 # ============================================================
 #acceleration
 # ============================================================
+#acc_max = max_list(acc[:, 0])
+#acc_max = max_list([acc_i[0] for acc_i in acc])
+#acc_max = np.max(acc[:, 0, :], axis=1)
 
-acc_max = np.max(acc[:, 0, :], axis=1)
+acc_max = []
+for i in range(len(acc)):
+    acc_max_i = np.max(acc[i][0])  # max de cette simulation 
+    acc_max.append(acc_max_i)  # on ajoute à la liste globale
+
+acc_max = np.array(acc_max) # acceleration max de la sonde sur simulation i 
+
 plt.plot(parameterscan, acc_max, 'o-', color= 'red')
 plt.xlabel(rf"$\alpha_0 \,\,[\mathrm{{°}}]$")
 plt.ylabel(rf"$a_{{max}} \,\,[\mathrm{{m \cdot s^{{-2}} }}]$")

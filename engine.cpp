@@ -393,12 +393,13 @@ void run()
             step();
         }
 
-        printOut(false);
+        
 
         if (checkCollisions()) {
             cout << "Collision detectee a t = " << t << " s  !!!!!!" << endl;
             break;
         }
+        printOut(false);
 
         if (!adaptive) {
             dt_current = dt_nominal;
